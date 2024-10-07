@@ -161,35 +161,38 @@
           <h4>Senac</h4>
           <hr />
           <div class="form-group">
-            <label for="modalQuestion16">Sugestão de Título do curso</label>
-            <input type="text" class="form-control" id="modalQuestion16" name="question_16" />
+            <label for="modalQuestion16">Orgão Público ou Privado?</label>
+            <select name="question_16" class="form-control" id="modalQuestion16">
+              <option value="Público">Público</option>
+              <option value="Privado">Privado</option>
+            </select>
           </div>
           <div class="form-group">
-            <label for="modalQuestion17">Tipo de curso</label>
+            <label for="modalQuestion17">Proposta será de ação extensiva, curso ou consultoria?</label>
             <input type="text" class="form-control" id="modalQuestion17" name="question_17" />
           </div>
           <div class="form-group">
-            <label for="modalQuestion18">Eixo</label>
+            <label for="modalQuestion18">Qual o Título da proposta?</label>
             <input type="text" class="form-control" id="modalQuestion18" name="question_18" />
           </div>
           <div class="form-group">
-            <label for="modalQuestion19">Segmento</label>
-            <input type="text" class="form-control" id="modalQuestion19" name="question_19" />
+            <label for="modalQuestion19">Quais as atribuições/responsabilidades do Senac?</label>
+            <textarea type="text" class="form-control" id="modalQuestion19" name="question_19"></textarea>
           </div>
           <div class="form-group">
-            <label for="modalQuestion20">Carga Horária Sugerida</label>
-            <input type="text" class="form-control" id="modalQuestion20" name="question_20" />
+            <label for="modalQuestion20">Quais as atribuições/responsabilidades do Cliente?</label>
+            <textarea type="text" class="form-control" id="modalQuestion20" name="question_20"></textarea>
           </div>
           <div class="form-group">
-            <label for="modalQuestion21">Escolaridade mínima necessária</label>
+            <label for="modalQuestion21">Qual a carga horária sugerida?</label>
             <input type="text" class="form-control" id="modalQuestion21" name="question_21" />
           </div>
           <div class="form-group">
-            <label for="modalQuestion22">Idade mínima necessária</label>
+            <label for="modalQuestion22">Qual o objetivo do curso?</label>
             <input type="text" class="form-control" id="modalQuestion22" name="question_22" />
           </div>
           <div class="form-group">
-            <label for="modalQuestion23">Objetivo do Curso</label>
+            <label for="modalQuestion23">Segmento</label>
             <input type="text" class="form-control" id="modalQuestion23" name="question_23" />
           </div>
           <div class="form-group">
@@ -210,21 +213,51 @@
   </div>
 </div>
 
+
+
+<!-- Modal de Loading -->
+<div class="modal" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="loadingModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+          <div class="modal-body text-center">
+              <div class="spinner-border  text-primary"  role="status">
+                  <span class="sr-only"></span>
+              </div>
+              <h5>Carregando, por favor aguarde...</h5>
+          </div>
+      </div>
+  </div>
+</div>
+
+<a class="btn btn-primary" id="showModalButton">Mostrar Modal de Loading</a>
+
 <script>
 
 
-  new DataTable('#proposalTable', {
+  // Função para mostrar o modal de loading
+  function showLoadingModal() {
+  $('#loadingModal').modal('show');
+}
+
+// Função para ocultar o modal de loading
+function hideLoadingModal() {
+  $('#loadingModal').modal('hide');
+}
+
+new DataTable('#proposalTable', {
     "language": {
       "url": `{% static 'Portuguese-Brasil.json' %}`,
       "search": "",
-      "searchPlaceholder": "Buscar Proposta" 
+      "searchPlaceholder": "Buscar Usuário" //
     },
+    "ordering": true,
+    "order": [],
     "pageLength": 9,
     "pagingType": "numbers",
     "lengthChange": false,
     "info": false,
     "columnDefs": [
-      { "orderable": false, "targets": [-1, -2] }
+      { "orderable": false, "targets": [-1, -2] }  // Desativa ordenação para as duas últimas colunas
     ]
   });
 
@@ -259,62 +292,46 @@
     });
 
     $(document).on("click", ".generateProposal", function () {
+      showLoadingModal()
       console.log('Gerando proposta...');
 
       var prompt = `
-            Você é um sistema de geração de propostas corporativas. 
-            Informações fornecidas pelo cliente: 
-                "Empresa": ${$(this).data("question_1")},
-                "Ramo": ${$(this).data("question_2")},
-                "Principal negócio": ${$(this).data("question_3")},
-                "Colaboradores": ${$(this).data("question_4")},
-                "Qual a missão, visão e valores da empresa?": ${$(this).data(
-        "question_5"
-      )},
-                "Quais os diferenciais essenciais da empresa?": ${$(this).data(
-        "question_6"
-      )},
-                "Quais suas principais necessidades? Como podemos ajuda-los?": ${$(
-        this
-      ).data("question_7")},
-                "Essas necessidades foram geradas em função de algum problema em especial? Como surgiu essa demanda?": ${$(
-        this
-      ).data("question_8")},
-                "Além das necessidades relatadas, existe alguma outra que você gostaria de relatar?": ${$(
-        this
-      ).data("question_9")},
-                "Qual o objetivo principal da capacitação?": ${$(this).data(
-        "question_10"
-      )},
-                "Quais os principais temas que você acredita que devem ser trabalhados nesta formação?": ${$(
-        this
-      ).data("question_11")},
-                "Quem deverá participar da capacitação? (público-alvo) Quantas pessoas aproximadamente?": ${$(
-        this
-      ).data("question_12")},
-                "Qual o nível médio de formação(escolaridade) do público-alvo?": ${$(
-        this
-      ).data("question_13")},
-                "A capacitação fará parte de um programa de treinamento?": ${$(
-        this
-      ).data("question_14")},
-                "Outras observações": ${$(this).data("question_15")},
-                "Sugestão de Título do curso": ${$(this).data("question_16")},
-                "Tipo de curso": ${$(this).data("question_17")},
-                "Eixo": ${$(this).data("question_18")},
-                "Segmento": ${$(this).data("question_19")},
-                "Carga Horária Sugerida": ${$(this).data("question_20")},
-                "Escolaridade mínima necessária": ${$(this).data(
-        "question_21"
-      )},
-                "Idade mínima necessária": ${$(this).data("question_22")},
-                "Objetivo do Curso": ${$(this).data("question_23")},
-                "Elementos": ${$(this).data("question_24")}
-
-                Com base nas informações acima, gere uma proposta corporativa estruturada. 
-                Preencha todos os campos, mesmo que os valores sejam vazios ou não fornecidos.
-                A proposta deve ser bem contextualizada apresentando 2000 palavras, adicione mais informações aos valores já fornecidos, se necessário.
-                    `;
+                  Crie uma proposta de treinamento profissional e abrangente para a prestação de serviços ou produtos a um cliente com o nome  ${$(this).data("question_1")}.
+                  A proposta deve se basear nos seguintes parametros (IMPORTANTE: Nenhum parametro pode ser retornado vazio):
+                  destinatário: ${$(this).data("question_1")}
+                  titulo:  ${$(this).data("question_18")}(Não utilizar os termos a seguir no titulo "Qualificação Profissional, Técnico, Graduação ou Pós-Graduação")
+                  Objetivo: ${$(this).data("question_22")}(essa etapa precisa ser detalhada em um parágrafo, utilizando o resumo informado. Importante utilizar um ou mais verbos a seguir para dar enfase no objetivo: difundir, divulgar, propagar, repassar, orientar, apresentar,aprimorar, melhorar, otimizar, complementar,
+                  ampliar, potencializar, acrescentar, amplificar, aumentar, incrementar, práticar ,levantar, mapear, atuar, realizar)
+                  Periodo de realização:{}(gerar com base na proposta)
+                  Detalhamento da proposta: Essa etapa precisa ser detalhada levando em consideração o titulo e objetivo.
+                  Importante!!! - O detalhamento da proposta deve ser dividido em etapas de dependendo da carga horaria e também utilizar a seguinte estrura: Titulo da etapa, carga horaria necessária, público alvo, objetivo da etapa, conteudo programatico(em lista)
+                  Carga horária total: {}
+                  Valor do investimento: {}
+                  Importante que a resposta seja um objeto json sem as ""json"". O json deve sempre conter as seguinte estrurtura de  chaves:
+                  "data": "${new Date().toLocaleDateString()}",
+                  "cliente": "",
+                  "destinatario": "",
+                  "titulo": "",
+                  "objetivo": "",
+                  "periodo": "",
+                  "detalhamento_proposta": [
+                      {
+                          "titulo_etapa": "",
+                          "carga_horaria_necessaria": "",
+                          "publico_alvo": "",
+                          "objetivo_da_etapa": "",
+                          "conteudo_programatico": [
+                          ]
+                      },
+                  ],
+                  "carga_horaria_total": " ${$(this).data("question_21")} Horas (Esse valor deve ser sempre a soma de todas as horas da carga_horaria_necessaria)",
+                  "valor_investimento": "",
+                  "type":  ${$(this).data("question_16")},
+                  "atribuicao_senac": " ${$(this).data("question_19")}",
+                  "atribuicao_cliente": " ${$(this).data("question_20")}"
+                  
+  }
+                  `
 
       $.post(
         "{% url 'send_message' %}",
@@ -324,33 +341,36 @@
         },
         function (data) {
           proposal = data.response;
-          console.log(proposal);
+          
 
-          // $.ajax({
-          //     url: "{% url 'download_doc' %}",
-          //     type: "POST",
-          //     data: {
-          //         'proposal': proposal,
-          //         'csrfmiddlewaretoken': '{{ csrf_token }}'
-          //     },
-          //     xhrFields: {
-          //         responseType: 'blob'
-          //     },
-          //     success: function (blob) {
-          //         var url = window.URL.createObjectURL(blob);
-          //         var a = document.createElement('a');
-          //         a.href = url;
-          //         a.download = 'proposta.doc';
-          //         document.body.appendChild(a);
-          //         a.click();
-          //         window.URL.revokeObjectURL(url);
-          //         document.body.removeChild(a);
-          //         console.log('Download gerado com sucesso.');
-          //     },
-          //     error: function (xhr, status, error) {
-          //         console.log(`Erro: ${error}`);
-          //     }
-          // });
+          $.ajax({
+              url: "{% url 'download_doc' %}",
+              type: "POST",
+              data: {
+                  'proposal': proposal,
+                  'csrfmiddlewaretoken': '{{ csrf_token }}'
+              },
+              xhrFields: {
+                  responseType: 'blob'
+              },
+              success: function (blob) {
+                  var url = window.URL.createObjectURL(blob);
+                  var a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'proposta.doc';
+                  document.body.appendChild(a);
+                  a.click();
+                  window.URL.revokeObjectURL(url);
+                  document.body.removeChild(a);
+                  console.log('Download gerado com sucesso.');
+                  hideLoadingModal()
+              },
+              error: function (xhr, status, error) {
+                  console.log(`Erro: ${error}`);
+                  alert('Ocorreu erro durante o processo de exportação. Tente novamente.')
+                  hideLoadingModal()
+              }
+          });
         }
       );
     });

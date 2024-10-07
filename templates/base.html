@@ -37,6 +37,7 @@
   <script rel="stylesheet" src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script rel="stylesheet" src="https://cdn.datatables.net/2.1.7/js/dataTables.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.7/css/dataTables.dataTables.css">
+    
 
 </head>
 
@@ -49,10 +50,11 @@
           height="30px" /></a>
     </div>
     <div class="menu-items">
-      {% if request.user.is_superuser %}
+      <a href="{% url 'chat_view' %}">Início</a>
       <a href="{% url 'list-proposals' %}">Solicitações de Propostas Externas</a>
-      <!-- <a href="{% url 'testchat' %}">Teste de prompt</a> -->
       <a href="{% url 'list-teachers' %}">Professores</a>
+      {% if request.user.is_superuser %}
+      <!-- <a href="{% url 'testchat' %}">Teste de prompt</a> -->
       <a href="{% url 'list-users' %}">Usuários</a>
       {% endif %}
       <a href="{% url 'logout' %}">Sair</a>

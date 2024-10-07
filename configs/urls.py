@@ -32,8 +32,12 @@ urlpatterns = [
     path('create-user/', views.create_user, name='create-user'),
     path('create-teacher/', views.create_teacher, name='create-teacher'),
     path('change-password/', views.update_password, name='change_password'),
+    
+    
+    path('reset-password/', views.reset_password, name='reset_password'),
 
 
+    
 
 
     path('testchat/', views.testchat, name='testchat'),

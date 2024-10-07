@@ -1,10 +1,18 @@
 import time
+import smtplib
+import time
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement, ns
 from docx.oxml.ns import nsdecls, qn
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 from docx.shared import Inches, Pt
 
 data = {
@@ -95,7 +103,8 @@ def replace_paragraph(doc, data_json):
                 insert_private_or_public(paragraph, data_json["type"])
                 break
             if key in paragraph.text:
-                paragraph.text = paragraph.text.replace(key, data_json[value])
+                text_replace = data_json[value] if data_json[value] else ''
+                paragraph.text = paragraph.text.replace(key, text_replace)
 
 
 def insert_detalhamento_da_proposta(doc, detalhamento_proposta: list):
@@ -106,7 +115,21 @@ def insert_detalhamento_da_proposta(doc, detalhamento_proposta: list):
                 insert_line_merge(table, value)
                 continue
             insert_line_information(
+                
                 table, SCHEMA_DETALHAMENTO_PROPOSTA[key], value)
+
+    first_row = table.rows[0]
+    merged_cell = first_row.cells[0].merge(first_row.cells[1])
+    merged_cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    merged_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+
+    for row in table.rows:
+        for cell in row.cells:
+            set_cell_border(cell, top={"sz": 12, "val": "single", "color": "000000"},
+                            bottom={"sz": 12, "val": "single",
+                                    "color": "000000"},
+                            left={"sz": 12, "val": "single", "color": "000000"},
+                            right={"sz": 12, "val": "single", "color": "000000"})
 
     first_row = table.rows[0]
     merged_cell = first_row.cells[0].merge(first_row.cells[1])
@@ -222,3 +245,76 @@ def generate_doc(data_json):
 
 if __name__ == '__main__':
     generate_doc(data)
+def send_email(to_email, subject, file_path=None,  body=""):
+
+    # onfigs
+    from_email = "geniapropostas@gmail.com"
+    password = "hkjb rvli mzfq eaqb"
+
+    # Configurações do servidor SMTP (exemplo com Gmail)
+    smtp_server = "smtp.gmail.com"
+    smtp_port = 587  # Porta TLS
+
+    # Criação da mensagem
+    msg = MIMEMultipart()
+    msg["From"] = from_email
+    msg["To"] = to_email
+    msg["Subject"] = subject
+
+    # Corpo do e-mail
+    msg.attach(MIMEText(body, "plain"))
+
+    # Se houver conteúdo de arquivo e nome do arquivo
+    if file_path:
+
+        try:
+            with open(file_path, "rb") as f:
+                file_content = f.read()
+
+            file_name = file_path
+            # Criar o objeto MIMEBase e adicionar o cabeçalho adequado
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(file_content)
+            encoders.encode_base64(part)
+            part.add_header(
+                "Content-Disposition",
+                f"attachment; filename= {file_name}",
+            )
+
+            # Anexar o arquivo à mensagem
+            msg.attach(part)
+        except Exception as e:
+            print(f"Erro ao anexar o arquivo: {e}")
+            return
+
+    try:
+        # Conectar ao servidor SMTP
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()  # Inicializa a conexão TLS
+        server.login(from_email, password)  # Autentica no servidor SMTP
+
+        # Enviar o e-mail
+        text = msg.as_string()
+        server.sendmail(from_email, to_email, text)
+        print(f"E-mail enviado com sucesso para {to_email}")
+
+    except Exception as e:
+        print(f"Erro ao enviar o e-mail: {e}")
+
+    finally:
+        # Fechar a conexão SMTP
+        server.quit()
+
+
+if __name__ == '__main__':
+    with open("modelo.docx", "rb") as f:
+        file_content = f.read()
+
+    file_name = "arquivo.txt"
+
+    send_email_with_attachment(
+        to_email="alexsandervieirajunior@gmail.com",
+        subject="Proposta Gerada GenIA",
+        file_content=file_content,
+        file_name=file_name
+    )

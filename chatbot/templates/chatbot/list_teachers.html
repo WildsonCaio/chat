@@ -161,7 +161,7 @@
         <th scope="col">Formação</th>
         <th scope="col">Competências</th>
         <th style="width: 50px;"></th>
-        <!-- <th style="width: 50px;"></th> -->
+        <th style="width: 50px;"></th>
       </tr>
     </thead>
     <tbody>
@@ -181,13 +181,13 @@
           <div class="badge mb-2 p-2">{{items}}</div>
           {% endfor %}
         </td>
-        <!-- <td>
+        <td>
           <i type="button" data-bs-toggle="modal" data-bs-target="#editModal"
             data-bs-target="#editModal" data-edit-id="{{teacher.id}}" data-edit-username="{{ teacher.name }}"
             data-edit-education="{{ teacher.education }}" data-edit-area="{{teacher.area}}"
             data-edit-competency="{{teacher.competency}}" title="Editar Usuário"
             class="fa-regular fa-pen-to-square text-success edit-user-btn" style="cursor: pointer;"></i>
-        </td> -->
+        </td>
         <td>
           <i data-id="{{teacher.id}}" title="Deletar Usuário" class="fa-solid fa-trash-can text-danger deleteTeacher"
             style="cursor: pointer;"></i>
@@ -208,6 +208,8 @@
       "search": "",
       "searchPlaceholder": "Buscar Professor" //
     },
+    "ordering": true,
+    "order": [],
     "pageLength": 9,
     "pagingType": "numbers",
     "lengthChange": false,
@@ -325,9 +327,20 @@
 
 
 
-  document.getElementById('editTeacherForm').addEventListener('submit', function () {
-    document.getElementById('edit-competencyInput').value = competency
-  })
+  document.getElementById('editTeacherForm').addEventListener('submit', function (e) {
+    var newValuebadge = []
+    
+    document.querySelectorAll('.competency-badge').forEach((item) => {
+        var badgeValue = item.childNodes[0].nodeValue.trim();
+        newValuebadge.push(badgeValue);
+    })
+
+
+    
+
+    document.getElementById('edit-competencyInput').value = newValuebadge;
+
+});
 
 
 
@@ -339,85 +352,88 @@
   document.addEventListener('DOMContentLoaded', function () {
     var editModal = document.getElementById('editModal');
     editModal.addEventListener('show.bs.modal', function (event) {
-      var button = event.relatedTarget; // Botão que acionou o modal
+        var button = event.relatedTarget; // Botão que acionou o modal
 
-      var teacherId = button.getAttribute('data-edit-id');
-      var teacherName = button.getAttribute('data-edit-username');
-      var teacherEducation = button.getAttribute('data-edit-education');
-      var teacherArea = button.getAttribute('data-edit-area')
-      var teacherCompetency = button.getAttribute('data-edit-competency')
+        var teacherId = button.getAttribute('data-edit-id');
+        var teacherName = button.getAttribute('data-edit-username');
+        var teacherEducation = button.getAttribute('data-edit-education');
+        var teacherArea = button.getAttribute('data-edit-area');
+        var teacherCompetency = button.getAttribute('data-edit-competency');
 
-      // Preencher os campos do modal com as informações do usuário
-      document.getElementById('edit-teacher-id').value = teacherId;
-      document.getElementById('edit-teacherName').value = teacherName;
-      document.getElementById('edit-teacherEducation').value = teacherEducation;
-      document.getElementById('edit-teacherArea').value = teacherArea;
+        // Preencher os campos do modal com as informações do usuário
+        document.getElementById('edit-teacher-id').value = teacherId;
+        document.getElementById('edit-teacherName').value = teacherName;
+        document.getElementById('edit-teacherEducation').value = teacherEducation;
+        document.getElementById('edit-teacherArea').value = teacherArea;
 
-      const formattedStr = teacherCompetency.replace(/'/g, '"');
+        const formattedStr = teacherCompetency.replace(/'/g, '"');
 
-      // Convertendo para array
-      const arr = JSON.parse(formattedStr);
+        // Convertendo para array
+        const arr = JSON.parse(formattedStr);
+        console.log(arr);
 
-      arr.forEach((el) => {
-        competency.push(el)
-        let newItem = document.createElement("li");
-        newItem.classList.add("competency-badge", "badge");
-        newItem.innerHTML = `${el} <span class="close">&times;</span>`;
-        document.getElementById("edit-competencyList").appendChild(newItem);
+        document.getElementById("edit-competencyList").innerHTML = ""; 
+        competency = []
+        arr.forEach((el) => {
+            competency.push(el);
+            let newItem = document.createElement("li");
+            newItem.classList.add("competency-badge", "badge");
+            newItem.innerHTML = `${el} <span class="close">&times;</span>`;
+            
+            // Adiciona o novo item à lista
+            document.getElementById("edit-competencyList").appendChild(newItem);
 
-        newItem.querySelector(".close").addEventListener("click", function () {
-          this.parentElement.remove();
+            newItem.querySelector(".close").addEventListener("click", function () {
+                this.parentElement.remove();
+            });
         });
-
-
-        document.getElementById("edit-competencyList").appendChild(newItem);
-      });
     });
-  });
+});
+
 
 
 
 
   document.addEventListener('DOMContentLoaded', function () {
+    var editModal = document.getElementById('editModal');
     var listModal = document.getElementById('listModal');
+
+
     listModal.addEventListener('show.bs.modal', function (event) {
-      var button = event.relatedTarget; // Botão que acionou o modal
+        console.log('Modal is about to be shown');
+        
+        var button = event.relatedTarget; // Botão que acionou o modal
+        console.log(button); // Veja qual botão está acionando o modal
 
+        var teacherName = button.getAttribute('data-list-username');
+        var teacherEducation = button.getAttribute('data-list-education');
+        var teacherArea = button.getAttribute('data-list-area');
+        var teacherCompetency = button.getAttribute('data-list-competency');
 
-      var teacherName = button.getAttribute('data-list-username');
-      var teacherEducation = button.getAttribute('data-list-education');
-      var teacherArea = button.getAttribute('data-list-area')
-      var teacherCompetency = button.getAttribute('data-list-competency')
+        // Preencher os campos do modal com as informações do usuário
+        document.getElementById('teacherName').value = teacherName;
+        document.getElementById('teacherEducation').value = teacherEducation;
+        document.getElementById('teacherArea').value = teacherArea;
 
-      // Preencher os campos do modal com as informações do usuário
-      document.getElementById('teacherName').value = teacherName;
-      document.getElementById('teacherEducation').value = teacherEducation;
-      document.getElementById('teacherArea').value = teacherArea;
+        const formattedStr = teacherCompetency.replace(/'/g, '"');
 
-      const formattedStr = teacherCompetency.replace(/'/g, '"');
+        // Convertendo para array
+        const arr = JSON.parse(formattedStr);
 
-      // Convertendo para array
-      const arr = JSON.parse(formattedStr);
+        document.getElementById("competencyList").innerHTML = "";
+        arr.forEach((el) => {
+            let newItem = document.createElement("li");
+            newItem.classList.add("competency-badge", "badge");
+            newItem.innerHTML = `${el}`;
+            document.getElementById("competencyList").appendChild(newItem);
+        });
 
-      document.getElementById("competencyList").innerHTML = "";
-      arr.forEach((el) => {
-        let newItem = document.createElement("li");
-        newItem.classList.add("competency-badge", "badge");
-        newItem.innerHTML = `${el}`;
-        document.getElementById("competencyList").appendChild(newItem);
-
-      });
-
-
-
-
-      document.getElementById('competencyInput').value = ' ';
+        document.getElementById('competencyInput').value = ' ';
     });
-  });
+});
 
 
-  document.getElementById('editTeacherForm').x
-  document.getElementById('listuserForm').x
+
 
 
 

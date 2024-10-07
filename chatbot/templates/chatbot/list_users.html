@@ -100,8 +100,7 @@
 <div class="container my-5" style="padding: 30px !important; max-width: 1200px !important">
   <div class="align-items-center d-flex justify-content-between position-relative">
     <!-- Button trigger modal -->
-    <button type="button" class="add-professor-btn user-btn" data-bs-toggle="modal"
-      data-bs-target="#exampleModal">
+    <button type="button" class="add-professor-btn user-btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
       + Adicionar Usuário
     </button>
 
@@ -202,12 +201,14 @@
 <script>
 
 
-new DataTable('#userTable', {
+  new DataTable('#userTable', {
     "language": {
       "url": `{% static 'Portuguese-Brasil.json' %}`,
       "search": "",
       "searchPlaceholder": "Buscar Usuário" //
     },
+    "ordering": true,
+    "order": [],
     "pageLength": 9,
     "pagingType": "numbers",
     "lengthChange": false,
@@ -292,7 +293,7 @@ new DataTable('#userTable', {
 
       var userName = button.getAttribute('data-list-username');
       console.log(userName);
-      
+
       var userEmail = button.getAttribute('data-list-email');
       var isSuperuser = button.getAttribute('data-list-is-superuser') === 'Sim' ? '1' : '0';
       var isActive = button.getAttribute('data-list-is-active') === 'Habilitado';
