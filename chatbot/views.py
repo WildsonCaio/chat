@@ -16,7 +16,7 @@ from chatbot.services import generate_doc
 
 
 # Configurar a API do Google Gemini
-genai.configure(api_key="AIzaSyAMBJfbMpW5iqt3XsqFjyIdhfFbfU7YbkE")
+genai.configure(api_key="AIzaSyDkXZ684B14RXJQvnZBqvL82gOPXlUp2j0")
 model = genai.GenerativeModel("gemini-pro")
 
 @login_required(redirect_field_name='login')
